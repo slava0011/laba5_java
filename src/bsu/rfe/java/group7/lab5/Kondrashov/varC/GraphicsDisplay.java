@@ -240,4 +240,25 @@ public class GraphicsDisplay extends JPanel {
         }
         canvas.setColor(oldColor);
     }
+
+    protected void paintGraphics(Graphics2D canvas) {
+        canvas.setStroke(graphicsStroke);
+        canvas.setColor(Color.RED);
+        GeneralPath graphics = new GeneralPath();
+        for (int i = 0; i < graphicsData.length; i++) {
+            Point2D.Double point = xyToPoint(graphicsData[i][0], graphicsData[i][1]);
+            graphicsDataI[i][0] = (int) point.getX();
+            graphicsDataI[i][1] = (int) point.getY();
+            if (transform) {
+                graphicsDataI[i][0] = (int) point.getY();
+                graphicsDataI[i][1] = getHeight() - (int) point.getX();
+            }
+            if (i > 0) {
+                graphics.lineTo(point.getX(), point.getY());
+            } else {
+                graphics.moveTo(point.getX(), point.getY());
+            }
+        }
+        canvas.draw(graphics);
+    }
 }
