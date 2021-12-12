@@ -491,4 +491,43 @@ public class GraphicsDisplay extends JPanel {
         canvas.setColor(oldColor);
         canvas.setStroke(oldStroke);
     }
+
+    private boolean markPoint(double y) {
+        int n = (int) y;
+        if (n < 0)
+            n *= (-1);
+        while (n != 0) {
+            int q = n - (n / 10) * 10;
+            if (q % 2 != 0)
+                return false;
+            n = n / 10;
+        }
+        return true;
+    }
+
+    protected void paintMarkers(Graphics2D canvas) {
+        canvas.setStroke(markerStroke);
+        for (double[] point : graphicsData) {
+            if (markPoint(point[1])) {
+                canvas.setColor(Color.BLUE);
+            } else {
+                canvas.setColor(Color.RED);
+            }
+            GeneralPath path = new GeneralPath();
+            Point2D.Double center = xyToPoint(point[0], point[1]);
+            path.moveTo(center.x, center.y - 5);
+            path.lineTo(center.x, center.y + 5);
+            path.moveTo(center.x - 5, center.y);
+            path.lineTo(center.x + 5, center.y);
+            path.moveTo(center.x - 5, center.y - 2);
+            path.lineTo(center.x - 5, center.y + 2);
+            path.moveTo(center.x + 5, center.y - 2);
+            path.lineTo(center.x + 5, center.y + 2);
+            path.moveTo(center.x - 2, center.y - 5);
+            path.lineTo(center.x + 2, center.y - 5);
+            path.moveTo(center.x - 2, center.y + 5);
+            path.lineTo(center.x + 2, center.y + 5);
+            canvas.draw(path);
+        }
+    }
 }
