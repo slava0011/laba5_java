@@ -83,4 +83,40 @@ public class GraphicsDisplay extends JPanel {
         rect = new Rectangle2D.Double();
         zone.use = false;
     }
+
+    public void showGraphics(double[][] graphicsData) {
+        this.graphicsData = graphicsData;
+        graphicsDataI = new int[graphicsData.length][2];
+        repaint();
+    }
+
+    public void setShowAxis(boolean showAxis) {
+        this.showAxis = showAxis;
+        repaint();
+    }
+
+    public void setTransform(boolean transform) {
+        this.transform = transform;
+        repaint();
+    }
+
+    public void setShowGrid(boolean showGrid) {
+        this.showGrid = showGrid;
+        repaint();
+    }
+
+    public int getDataLenght() {
+        return graphicsData.length;
+    }
+
+    public double getValue(int i, int j) {
+        return graphicsData[i][j];
+    }
+
+    public void setShowMarkers(boolean showMarkers) {
+        this.showMarkers = showMarkers;
+        repaint();
+    }
+
+    
 }
