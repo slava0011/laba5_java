@@ -581,4 +581,32 @@ public class GraphicsDisplay extends JPanel {
         canvas.setStroke(oldStroke);
         canvas.setFont(oldFont);
     }
+
+    protected Point2D.Double xyToPoint(double x, double y) {
+        double deltaX = x - minX;
+        double deltaY = maxY - y;
+        if(!zoom)
+            return new Point2D.Double(deltaX * scale, deltaY * scale);
+        else
+            return new Point2D.Double(deltaX * scaleX, deltaY * scaleY);
+    }
+
+
+    protected Point2D.Double pointToXY(int x, int y) {
+        Point2D.Double p = new Point2D.Double();
+        if (!transform) {
+            p.x = x / scale + minX;
+            int q = (int) xyToPoint(0, 0).y;
+            p.y = maxY - maxY * ((double) y / (double) q);
+        } else {
+            if(!zoom){
+                p.y = -x / scale + (maxY);
+                p.x = -y / scale + maxX;
+            }else{
+                p.y = -x / scaleY + (maxY);
+                p.x = -y / scaleX + maxX;
+            }
+        }
+        return p;
+    }
 }
