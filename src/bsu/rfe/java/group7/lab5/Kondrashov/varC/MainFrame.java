@@ -103,5 +103,56 @@ public class MainFrame extends JFrame {
                 display.setShowGrid(showGridItem.isSelected());
             }
         };
+
+        showGridItem = new JCheckBoxMenuItem(showGridAction);
+        graphicsMenu.add(showGridItem);
+        showGridItem.setSelected(true);
+
+        graphicsMenu.addMenuListener(new GraphicsMenuListener());
+        getContentPane().add(display, BorderLayout.CENTER);
+    }
+
+    protected void saveGraphics(File selectedFile) {
+        File file=fileChooser.getSelectedFile();
+        try {
+            DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
+            for (int i = 0; i<display.getDataLenght(); i++) {
+                out.writeDouble(display.getValue(i,0));
+                out.writeDouble(display.getValue(i,1));
+            }
+            out.close();
+        } catch (Exception e) {
+            System.out.println("Не удалость создать файл");
+        }
+    }
+
+    protected void openGraphics(File selectedFile) {
+        try {
+            DataInputStream in = new DataInputStream(new FileInputStream(selectedFile));
+            double[][] graphicsData = new double[in.available()/(Double.SIZE/8)/2][];
+            int i = 0;
+            while (in.available()>0) {
+                Double x = in.readDouble();
+                Double y = in.readDouble();
+                graphicsData[i++] = new double[] {x, y};
+            }
+            if (graphicsData!=null && graphicsData.length>0) {
+                fileLoaded = true;
+                display.showGraphics(graphicsData);
+                display.repaint();
+            }
+            in.close();
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(MainFrame.this, "Указанный файл не найден", "Ошибка загрузки данных", JOptionPane.WARNING_MESSAGE);
+            return;
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(MainFrame.this, "Ошибка чтения координат точек из файла", "Ошибка загрузки данных", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+    }
+    public static void main(String[] args) {
+        MainFrame frame = new MainFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 }
