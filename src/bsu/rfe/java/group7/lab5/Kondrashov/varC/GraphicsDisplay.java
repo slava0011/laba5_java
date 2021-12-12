@@ -162,7 +162,7 @@ public class GraphicsDisplay extends JPanel {
             ((Graphics2D) g).translate(-getHeight(), 0);
         }
         scale = Math.min(scaleX, scaleY);
-        if(!zoom){
+        if (!zoom) {
             if (scale == scaleX) {
                 double yIncrement = 0;
                 if (!transform)
@@ -185,4 +185,59 @@ public class GraphicsDisplay extends JPanel {
                 }
             }
         }
+        Graphics2D canvas = (Graphics2D) g;
+        Stroke oldStroke = canvas.getStroke();
+        Color oldColor = canvas.getColor();
+        Paint oldPaint = canvas.getPaint();
+        Font oldFont = canvas.getFont();
+        if (showGrid)
+            paintGrid(canvas);
+        if (showAxis)
+            paintAxis(canvas);
+        paintGraphics(canvas);
+        if (showMarkers)
+            paintMarkers(canvas);
+        if (SMP != null)
+            paintHint(canvas);
+        if (selMode) {
+            canvas.setColor(Color.BLACK);
+            canvas.setStroke(selStroke);
+            canvas.draw(rect);
+        }
+        canvas.drawString ("maxY", (int)xyToPoint(0, xmax).x+5, (int)xyToPoint(0, xmax).y+5);
+        canvas.setFont(oldFont);
+        canvas.setPaint(oldPaint);
+        canvas.setColor(oldColor);
+        canvas.setStroke(oldStroke);
+    }
+
+    protected void paintHint(Graphics2D canvas) {
+        Color oldColor = canvas.getColor();
+        canvas.setColor(Color.MAGENTA);
+        StringBuffer label = new StringBuffer();
+        label.append("X=");
+        label.append(formatter.format((SMP.xd)));
+        label.append(", Y=");
+        label.append(formatter.format((SMP.yd)));
+        FontRenderContext context = canvas.getFontRenderContext();
+        Rectangle2D bounds = captionFont.getStringBounds(label.toString(),context);
+        if (!transform) {
+            int dy = -10;
+            int dx = +7;
+            if (SMP.y < bounds.getHeight())
+                dy = +13;
+            if (getWidth() < bounds.getWidth() + SMP.x + 20)
+                dx = -(int) bounds.getWidth() - 15;
+            canvas.drawString (label.toString(), SMP.x + dx, SMP.y + dy);
+        } else {
+            int dy = 10;
+            int dx = -7;
+            if (SMP.x < 10)
+                dx = +13;
+            if (SMP.y < bounds.getWidth() + 20)
+                dy = -(int) bounds.getWidth() - 15;
+            canvas.drawString (label.toString(), getHeight() - SMP.y + dy, SMP.x + dx);
+        }
+        canvas.setColor(oldColor);
+    }
 }
