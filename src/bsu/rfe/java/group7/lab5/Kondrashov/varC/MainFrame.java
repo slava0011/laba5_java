@@ -150,9 +150,25 @@ public class MainFrame extends JFrame {
             return;
         }
     }
+    
     public static void main(String[] args) {
         MainFrame frame = new MainFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+    }
+
+    private class GraphicsMenuListener implements MenuListener {
+        public void menuSelected(MenuEvent e) {
+            showAxisMenuItem.setEnabled(fileLoaded);
+            showMarkersMenuItem.setEnabled(fileLoaded);
+            showGridItem.setEnabled(fileLoaded);
+            reformCoordinateItem.setEnabled(fileLoaded);
+        }
+
+        public void menuDeselected(MenuEvent e) {
+        }
+
+        public void menuCanceled(MenuEvent e) {
+        }
     }
 }
