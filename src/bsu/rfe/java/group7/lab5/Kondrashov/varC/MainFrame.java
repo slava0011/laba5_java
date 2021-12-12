@@ -77,5 +77,31 @@ public class MainFrame extends JFrame {
                 display.setShowAxis(showAxisMenuItem.isSelected());
             }
         };
+
+        showAxisMenuItem = new JCheckBoxMenuItem(showAxisAction);
+        graphicsMenu.add(showAxisMenuItem);
+        showAxisMenuItem.setSelected(true);
+        Action showMarkersAction = new AbstractAction("Показывать маркеры точек") {
+            public void actionPerformed(ActionEvent event) {
+                display.setShowMarkers(showMarkersMenuItem.isSelected());
+            }
+        };
+        showMarkersMenuItem = new JCheckBoxMenuItem(showMarkersAction);
+        graphicsMenu.add(showMarkersMenuItem);
+        showMarkersMenuItem.setSelected(true);
+
+        Action reformCoordinateAction = new AbstractAction("Преобразовать координаты") {
+            public void actionPerformed(ActionEvent event) {
+                display.setTransform(reformCoordinateItem.isSelected());
+            }
+        };
+        reformCoordinateItem = new JCheckBoxMenuItem(reformCoordinateAction);
+        graphicsMenu.add(reformCoordinateItem);
+        reformCoordinateItem.setSelected(false);
+        Action showGridAction = new AbstractAction("Показывать сетку") {
+            public void actionPerformed(ActionEvent event) {
+                display.setShowGrid(showGridItem.isSelected());
+            }
+        };
     }
 }
