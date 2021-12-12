@@ -609,4 +609,179 @@ public class GraphicsDisplay extends JPanel {
         }
         return p;
     }
+
+    public class MouseMotionHandler implements MouseMotionListener, MouseListener {
+        private double comparePoint(Point p1, Point p2) {
+            return Math.sqrt(Math.pow(p1.x - p2.x, 2)
+                    + Math.pow(p1.y - p2.y, 2));
+        }
+
+        private GraphPoint find(int x, int y) {
+            GraphPoint smp = new GraphPoint();
+            GraphPoint smp2 = new GraphPoint();
+            double r, r2 = 1000;
+            if (graphicsData!=null) {
+                for (int i = 0; i < graphicsData.length; i++) {
+                    Point p = new Point();
+                    p.x = x;
+                    p.y = y;
+                    Point p2 = new Point();
+                    p2.x = graphicsDataI[i][0];
+                    p2.y = graphicsDataI[i][1];
+                    r = comparePoint(p, p2);
+                    if (r < 7.0) {
+                        smp.x = graphicsDataI[i][0];
+                        smp.y = graphicsDataI[i][1];
+                        smp.xd = graphicsData[i][0];
+                        smp.yd = graphicsData[i][1];
+                        smp.n = i;
+                        if (r < r2) {
+                            r2 = r;
+                            smp2 = smp;
+                        }
+                        return smp2;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public void mouseMoved(MouseEvent ev) {
+            if(ev!=null){
+                GraphPoint smp;
+                smp = find(ev.getX(), ev.getY());
+                if (smp != null) {
+                    setCursor(Cursor.getPredefinedCursor(8));
+                    SMP = smp;
+                } else {
+                    setCursor(Cursor.getPredefinedCursor(0));
+                    SMP = null;
+                }
+                repaint();
+            }
+        }
+
+        public void mouseDragged(MouseEvent e) {
+            if (selMode) {
+                if (!transform)
+                    rect.setFrame(mausePX, mausePY, e.getX() - rect.getX(),
+                            e.getY() - rect.getY());
+                else {
+                    rect.setFrame(-mausePY + getHeight(), mausePX, -e.getY()
+                            + mausePY, e.getX() - mausePX);
+                }
+                repaint();
+            }
+            if (dragMode) {
+                if (!transform) {
+                    if(pointToXY(e.getX(), e.getY()).y<maxY && pointToXY(e.getX(), e.getY()).y>minY){
+                        graphicsData[SMP.n][1] = pointToXY(e.getX(), e.getY()).y;
+                        SMP.yd = pointToXY(e.getX(), e.getY()).y;
+                        SMP.y = e.getY();
+                    }
+                } else {
+                    if(pointToXY(e.getX(), e.getY()).y<maxY && pointToXY(e.getX(), e.getY()).y>minY){
+                        graphicsData[SMP.n][1] = pointToXY(e.getX(), e.getY()).y;
+                        SMP.yd = pointToXY(e.getX(), e.getY()).y;
+                        SMP.x = e.getX();
+                    }
+                }
+                repaint();
+            }
+        }
+
+        public void mouseClicked(MouseEvent e) {
+            if (e.getButton() != 3)
+                return;
+
+            try {
+                zone = stack.pop();
+            } catch (EmptyStackException err) {
+
+            }
+            if(stack.empty())
+                zoom=false;
+            repaint();
+        }
+
+        public void mouseEntered(MouseEvent arg0) {
+
+        }
+
+        public void mouseExited(MouseEvent arg0) {
+
+        }
+
+        public void mousePressed(MouseEvent e) {
+            if (e.getButton() != 1)
+                return;
+            if (SMP != null) {
+                selMode = false;
+                dragMode = true;
+            } else {
+                dragMode = false;
+                selMode = true;
+                mausePX = e.getX();
+                mausePY = e.getY();
+                if (!transform)
+                    rect.setFrame(e.getX(), e.getY(), 0, 0);
+                else
+                    rect.setFrame(e.getX(), e.getY(), 0, 0);
+            }
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            rect.setFrame(0, 0, 0, 0);
+            if (e.getButton() != 1) {
+                repaint();
+                return;
+            }
+            if (selMode) {
+                if (!transform) {
+                    if (e.getX() <= mausePX || e.getY() <= mausePY)
+                        return;
+                    int eY = e.getY();
+                    int eX = e.getX();
+                    if (eY > getHeight())
+                        eY = getHeight();
+                    if (eX > getWidth())
+                        eX = getWidth();
+                    double MAXX = pointToXY(eX, 0).x;
+                    double MINX = pointToXY(mausePX, 0).x;
+                    double MAXY = pointToXY(0, mausePY).y;
+                    double MINY = pointToXY(0, eY).y;
+                    stack.push(zone);
+                    zone = new Zone();
+                    zone.use = true;
+                    zone.MAXX = MAXX;
+                    zone.MINX = MINX;
+                    zone.MINY = MINY;
+                    zone.MAXY = MAXY;
+                    selMode = false;
+                    zoom=true;
+                } else {
+                    if (pointToXY(mausePX, 0).y <= pointToXY(e.getX(), 0).y
+                            || pointToXY(0, e.getY()).x <= pointToXY(0, mausePY).x)
+                        return;
+                    int eY = e.getY();
+                    int eX = e.getX();
+                    if (eY < 0)
+                        eY = 0;
+                    if (eX > getWidth())
+                        eX = getWidth();
+                    stack.push(zone);
+                    zone = new Zone();
+                    zone.use = true;
+                    zone.MAXY = pointToXY(mausePX, 0).y;
+                    zone.MAXX = pointToXY(0, eY).x;
+                    zone.MINX = pointToXY(0, mausePY).x;
+                    zone.MINY = pointToXY(eX, 0).y;
+                    selMode = false;
+                    zoom=true;
+                }
+
+            }
+            repaint();
+        }
+    }
 }
