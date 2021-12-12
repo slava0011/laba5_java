@@ -261,4 +261,77 @@ public class GraphicsDisplay extends JPanel {
         }
         canvas.draw(graphics);
     }
+
+    protected void paintHatch(Graphics2D canvas, double x1, double y1,
+                              double step) {// @!
+        Color oldColor = canvas.getColor();
+        Stroke oldStroke = canvas.getStroke();
+        canvas.setColor(Color.GRAY);
+        canvas.setStroke(hatchStroke);
+        GeneralPath graphics = new GeneralPath();
+        int uu = 0;
+        int y = (int) xyToPoint(0, 0).getY();
+        int x;
+        int d = 0;
+        for (double i = x1 + step; i < maxX; i += step) {
+            uu++;
+            if (uu == 5) {
+                uu = -5;
+                d = 5;
+            } else
+                d = 0;
+            x = (int) xyToPoint(i, 0).getX();
+            if (!transform) {
+                if (x > getWidth() - 22)
+                    break;
+            } else {
+                if (x > getHeight() - 22)
+                    break;
+            }
+            graphics.moveTo(x, y - 5 - d);
+            graphics.lineTo(x, y + 5 + d);
+        }
+        uu = 0;
+        for (double i = x1 - step; i > minX; i -= step) {
+            uu++;
+            if (uu == 5) {
+                uu = -5;
+                d = 5;
+            } else
+                d = 0;
+            x = (int) xyToPoint(i, 0).getX();
+            graphics.moveTo(x, y - 5 - d);
+            graphics.lineTo(x, y + 5 + d);
+        }
+        x = (int) xyToPoint(0, 0).getX();
+        uu = 0;
+        for (double i = y1 + step; i < maxY; i += step) {
+            uu++;
+            if (uu == 5) {
+                uu = -5;
+                d = 5;
+            } else
+                d = 0;
+            y = (int) xyToPoint(0, i).getY();
+            if (y < 20)
+                break;
+            graphics.moveTo(x - 5 - d, y);
+            graphics.lineTo(x + 5 + d, y);
+        }
+        uu = 0;
+        for (double i = y1 - step; i > minY; i -= step) {
+            uu++;
+            if (uu == 5) {
+                uu = -5;
+                d = 5;
+            } else
+                d = 0;
+            y = (int) xyToPoint(0, i).getY();
+            graphics.moveTo(x - 5 - d, y);
+            graphics.lineTo(x + 5 + d, y);
+        }
+        canvas.draw(graphics);
+        canvas.setStroke(oldStroke);
+        canvas.setColor(oldColor);
+    }
 }
