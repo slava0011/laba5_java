@@ -58,5 +58,24 @@ public class MainFrame extends JFrame {
                     openGraphics(fileChooser.getSelectedFile());
             }
         };
+
+        fileMenu.add(openGraphicsAction);
+        JMenu graphicsMenu = new JMenu("График");
+        menuBar.add(graphicsMenu);
+
+        Action saveGraphicsAction = new AbstractAction("Сохранить файл с графиком") {
+            public void actionPerformed(ActionEvent event) {
+                fileChooser.setCurrentDirectory(new File("~"));
+                if (fileChooser.showSaveDialog(MainFrame.this)==JFileChooser.APPROVE_OPTION)
+                    saveGraphics(fileChooser.getSelectedFile());
+            }
+        };
+        fileMenu.add(saveGraphicsAction);
+
+        Action showAxisAction = new AbstractAction("Показывать оси координат") {
+            public void actionPerformed(ActionEvent event) {
+                display.setShowAxis(showAxisMenuItem.isSelected());
+            }
+        };
     }
 }
