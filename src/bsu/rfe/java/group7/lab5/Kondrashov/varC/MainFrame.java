@@ -34,5 +34,29 @@ public class MainFrame extends JFrame {
     private GraphicsDisplay display = new GraphicsDisplay();
     private JCheckBoxMenuItem showGridItem;
 
-    
+    public MainFrame() {
+        super("График");
+        setSize(WIDTH, HEIGHT);
+        Dimension ss = new Dimension();
+        ss.height = 60;
+        ss.width = 40;
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        setLocation((kit.getScreenSize().width - WIDTH) / 2, (kit.getScreenSize().height - HEIGHT) / 2);
+        fileChooser = new JFileChooser();
+        JMenuBar menuBar = new JMenuBar();
+        setJMenuBar(menuBar);
+        JMenu fileMenu = new JMenu("Файл");
+        menuBar.add(fileMenu);
+        Action openGraphicsAction = new AbstractAction("Открыть файл с графиком") {
+            public void actionPerformed(ActionEvent event) {
+                if (fileChooser == null) {
+                    fileChooser = new JFileChooser();
+                    fileChooser.setCurrentDirectory(new File("."));
+                }
+                if (fileChooser.showOpenDialog(MainFrame.this) ==
+                        JFileChooser.APPROVE_OPTION)
+                    openGraphics(fileChooser.getSelectedFile());
+            }
+        };
+    }
 }
