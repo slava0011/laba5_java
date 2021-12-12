@@ -358,4 +358,72 @@ public class GraphicsDisplay extends JPanel {
         o /= 10;
         return (double) i * o;
     }
+
+    protected void paintCaptions(Graphics2D canvas, double step) {
+        formatter.setMaximumFractionDigits(5);
+        formatter.setGroupingUsed(false);
+        DecimalFormatSymbols dottedDouble = formatter.getDecimalFormatSymbols();
+        dottedDouble.setDecimalSeparator('.');
+        formatter.setDecimalFormatSymbols(dottedDouble);
+        Color oldColor = canvas.getColor();
+        Stroke oldStroke = canvas.getStroke();
+        Font oldFont = canvas.getFont();
+        canvas.setColor(Color.BLACK);
+        canvas.setFont(captionFont);
+        int xp = (int) xyToPoint(0, 0).x;
+        int yp;
+        FontRenderContext context = canvas.getFontRenderContext();
+        double y = step;
+        while (y <= maxY) {
+            yp = (int) xyToPoint(0, y).y;
+            if (yp < 30)
+                break;
+            String xs = formatter.format(y);
+            Rectangle2D bounds = captionFont.getStringBounds(xs, context);
+            canvas.drawString (xs, (int) (xp - 5 - bounds.getWidth()), yp);
+            y += step;
+        }
+        y = -step;
+
+        while (y >= minY) {
+            yp = (int) xyToPoint(0, y).y;
+            String xs = formatter.format(y);
+            Rectangle2D bounds = captionFont.getStringBounds(xs, context);
+            canvas.drawString (xs, (int) (xp - 5 - bounds.getWidth()), yp);
+            y -= step;
+        }
+
+        double x = 0.0d + step;
+        yp = (int) xyToPoint(0, 0).y;
+        while (x <= maxX) {
+
+            xp = (int) xyToPoint(x, 0).x;
+            String xs = formatter.format(x);
+            Rectangle2D bounds = captionFont.getStringBounds(xs, context);
+            if (!transform) {
+                if (xp + (int) (bounds.getWidth() / 2) > getWidth())
+                    break;
+            } else {
+                if (xp + bounds.getWidth() > getHeight())
+                    break;
+            }
+            canvas.drawString (xs, xp - (int) (bounds.getWidth() / 2), yp + 20);
+            x += step;
+        }
+        x = -step;
+        while (x >= minX) {
+            xp = (int) xyToPoint(x, 0).x;
+            String xs = formatter.format(x);
+            Rectangle2D bounds3 = captionFont.getStringBounds(xs, context);
+            if (xp - (int) (bounds3.getWidth() / 2) < 0)
+                break;
+            canvas.drawString (xs, xp - (int) (bounds3.getWidth() / 2), yp + 20);
+            x -= step;
+        }
+        canvas.drawString ("0", (int) xyToPoint(0, 0).getX() + 5,
+                (int) xyToPoint(0, 0).getY() + 20);
+        canvas.setColor(oldColor);
+        canvas.setStroke(oldStroke);
+        canvas.setFont(oldFont);
+    }
 }
