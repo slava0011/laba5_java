@@ -426,4 +426,69 @@ public class GraphicsDisplay extends JPanel {
         canvas.setStroke(oldStroke);
         canvas.setFont(oldFont);
     }
+
+    protected void paintGrid(Graphics2D canvas) {
+        GeneralPath graphics = new GeneralPath();
+        double MAX = Math.max(Math.abs(maxX - minX), Math.abs(maxY - minY));
+        double MAX20 = MAX / 20;
+        double step = 0.0f;
+        if (MAX20 < 1)
+            step = fix0MAX(MAX20);
+        else
+            step = fix1MAX(MAX20);
+        if (PPP) {
+            int YY = Math.min(getWidth(), getHeight());
+            if (YY < 200)
+                step *= 3;
+            else if (YY < 400)
+                step *= 2;
+        }
+        Color oldColor = canvas.getColor();
+        Stroke oldStroke = canvas.getStroke();
+        canvas.setStroke(gridStroke);
+        canvas.setColor(Color.BLUE);
+        int xp = 0;
+        double x = 0.0d;
+        int gH = getHeight();
+        int gW = getWidth();
+        if (transform) {
+            gH = getWidth();
+            gW = getHeight();
+        }
+        xp = (int) xyToPoint(0, 0).x;
+        while (xp > 0) {
+            graphics.moveTo(xp, 0);
+            graphics.lineTo(xp, gH);
+            xp = (int) xyToPoint(x, 0).x;
+            x -= step;
+        }
+        xp = (int) xyToPoint(0, 0).x;
+
+        while (xp < gW) {
+            graphics.moveTo(xp, 0);
+            graphics.lineTo(xp, gH);
+            xp = (int) xyToPoint(x, 0).x;
+            x += step;
+        }
+        int yp = (int) xyToPoint(0, 0).y;
+        double y = 0.0f;
+        while (yp < gH) {
+            yp = (int) xyToPoint(0, y).y;
+            graphics.moveTo(0, yp);
+            graphics.lineTo(gW, yp);
+            y -= step;
+        }
+        yp = (int) xyToPoint(0, 0).y;
+        while (yp > 0) {
+            yp = (int) xyToPoint(0, y).y;
+            graphics.moveTo(0, yp);
+            graphics.lineTo(gW, yp);
+            y += step;
+        }
+        canvas.draw(graphics);
+        paintHatch(canvas, 0, 0, step / 10);
+        paintCaptions(canvas, step);
+        canvas.setColor(oldColor);
+        canvas.setStroke(oldStroke);
+    }
 }
