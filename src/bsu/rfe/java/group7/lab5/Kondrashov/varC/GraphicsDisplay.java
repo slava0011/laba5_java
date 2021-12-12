@@ -334,4 +334,28 @@ public class GraphicsDisplay extends JPanel {
         canvas.setStroke(oldStroke);
         canvas.setColor(oldColor);
     }
+
+    private double fix0MAX(final double m) {
+        double mm = m;
+        int o = 1;
+        while (mm < 1.0d) {
+            mm = mm * 10;
+            o *= 10;
+        }
+        int i = (int) mm + 1;
+        return (double) i / o;
+    }
+
+    private double fix1MAX(final double m) {
+        double mm = m;
+        int o = 1;
+        while (mm > 1.0d) {
+            mm = mm / 10;
+            o *= 10;
+        }
+        mm *= 10;
+        int i = (int) mm + 1;
+        o /= 10;
+        return (double) i * o;
+    }
 }
