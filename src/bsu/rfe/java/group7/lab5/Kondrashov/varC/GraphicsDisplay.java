@@ -118,5 +118,71 @@ public class GraphicsDisplay extends JPanel {
         repaint();
     }
 
-    
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (graphicsData == null || graphicsData.length == 0)
+            return;
+        minX = graphicsData[0][0];
+        maxX = graphicsData[graphicsData.length - 1][0];
+        if (zone.use) {
+            minX = zone.MINX;
+        }
+        if (zone.use) {
+            maxX = zone.MAXX;
+        }
+        minY = graphicsData[0][1];
+        maxY = minY;
+        for (int i = 1; i < graphicsData.length; i++) {
+            if (graphicsData[i][1] < minY) {
+                minY = graphicsData[i][1];
+            }
+            if (graphicsData[i][1] > maxY) {
+                maxY = graphicsData[i][1];
+                xmax = graphicsData[i][1];
+            }
+        }
+        if (zone.use) {
+            minY = zone.MINY;
+        }
+        if (zone.use) {
+            maxY = zone.MAXY;
+        }
+        scaleX = 1.0 / (maxX - minX);
+        scaleY = 1.0 / (maxY - minY);
+        if (!transform)
+            scaleX *= getSize().getWidth();
+        else
+            scaleX *= getSize().getHeight();
+        if (!transform)
+            scaleY *= getSize().getHeight();
+        else
+            scaleY *= getSize().getWidth();
+        if (transform) {
+            ((Graphics2D) g).rotate(-Math.PI / 2);
+            ((Graphics2D) g).translate(-getHeight(), 0);
+        }
+        scale = Math.min(scaleX, scaleY);
+        if(!zoom){
+            if (scale == scaleX) {
+                double yIncrement = 0;
+                if (!transform)
+                    yIncrement = (getSize().getHeight() / scale - (maxY - minY)) / 2;
+                else
+                    yIncrement = (getSize().getWidth() / scale - (maxY - minY)) / 2;
+                maxY += yIncrement;
+                minY -= yIncrement;
+            }
+            if (scale == scaleY) {
+                double xIncrement = 0;
+                if (!transform) {
+                    xIncrement = (getSize().getWidth() / scale - (maxX - minX)) / 2;
+                    maxX += xIncrement;
+                    minX -= xIncrement;
+                } else {
+                    xIncrement = (getSize().getHeight() / scale - (maxX - minX)) / 2;
+                    maxX += xIncrement;
+                    minX -= xIncrement;
+                }
+            }
+        }
 }
